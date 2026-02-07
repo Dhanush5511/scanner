@@ -5,13 +5,12 @@
 <title>Ecomen Laboratory Pvt. Ltd.</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
-<!-- HEADER -->
 <header class="bg-white border-b">
 <div class="max-w-6xl mx-auto flex items-center gap-4 p-4">
 <div class="w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-gray-400">Logo</div>
@@ -22,7 +21,6 @@
 </div>
 </header>
 
-<!-- FORM -->
 <div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
 
 <form onsubmit="return validateForm()">
@@ -30,28 +28,32 @@
 <h2 class="font-bold text-lg">TRF DETAILS</h2>
 <hr class="border-green-500 mt-2 mb-6">
 
-<!-- Sample Code -->
 <label>Sample Code *</label>
-<div class="flex gap-3 mt-1">
-<input id="sampleCode" autofocus class="w-full border rounded-lg p-3"
+
+<div class="flex gap-2 mt-1">
+
+<input id="sampleCode" autofocus
+class="w-full border rounded-lg p-3"
 placeholder="Enter or scan sample code">
 
-<button type="button" onclick="startScanner()"
-class="border border-green-500 text-green-600 px-5 rounded-lg">Barcode</button>
+<button type="button"
+onclick="openScanner()"
+class="border border-green-500 text-green-600 px-5 rounded-lg">
+Scan
+</button>
 
-<button type="button" onclick="startScanner()"
-class="border border-green-500 text-green-600 px-5 rounded-lg">QR</button>
+<label class="border border-green-500 text-green-600 px-5 rounded-lg flex items-center cursor-pointer">
+Upload QR
+<input type="file" accept="image/*" hidden onchange="decodeFromImage(this)">
+</label>
+
 </div>
 
-<p class="text-sm text-gray-500 mt-1">Use USB scanner or click camera buttons above</p>
+<p class="text-sm text-gray-500 mt-1">
+Use USB scanner, Scan, or Upload QR image
+</p>
 
-<!-- Scanner -->
-<div id="scannerBox" class="hidden mt-4">
-<div id="reader" class="w-72"></div>
-<button type="button" onclick="stopScanner()" class="text-red-500 mt-2">Cancel Scanner</button>
-</div>
-
-<!-- Type -->
+<!-- TYPE -->
 <div class="mt-6">
 <label>Type of Sample *</label>
 <select id="sampleType" onchange="checkOther()"
@@ -62,8 +64,9 @@ class="w-full border rounded-lg p-3 mt-1">
 <option>Others</option>
 </select>
 
-<input id="otherSample" placeholder="Enter sample type"
-class="w-full border rounded-lg p-3 mt-2 hidden">
+<input id="otherSample"
+class="hidden w-full border rounded-lg p-3 mt-2"
+placeholder="Enter sample type">
 </div>
 
 <!-- PACKAGE -->
@@ -73,50 +76,26 @@ class="w-full border rounded-lg p-3 mt-2 hidden">
 <div id="packageInput"
 onclick="togglePackageDropdown()"
 class="border rounded-lg p-2 flex flex-wrap gap-2 cursor-pointer">
-
-<span id="packagePlaceholder" class="text-gray-400">
-Select packages...
-</span>
-
+<span class="text-gray-400">Select packages...</span>
 </div>
 
 <div id="packageDropdown"
 class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
 
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Copper')">Copper</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Cobalt')">Cobalt</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Chromium')">Chromium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Antimony')">Antimony</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Iron')">Iron</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Cadmium')">Cadmium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Beryllium')">Beryllium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Molybdenum')">Molybdenum</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Nickel')">Nickel</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Vanadium')">Vanadium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Zinc')">Zinc</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Bismuth')">Bismuth</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Cesium')">Cesium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Uranium')">Uranium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Strontium')">Strontium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Aluminium')">Aluminium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Barium')">Barium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Silver')">Silver</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Tin')">Tin</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Thallium')">Thallium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Arsenic')">Arsenic</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Lead')">Lead</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Mercury')">Mercury</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Platinum')">Platinum</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Tungsten')">Tungsten</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Calcium')">Calcium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Magnesium')">Magnesium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Manganese')">Manganese</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Selenium')">Selenium</div>
-<div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="selectPackage('Lithium')">Lithium</div>
+<div onclick="selectPackage('Copper')" class="p-2 hover:bg-gray-100">Copper</div>
+<div onclick="selectPackage('Cobalt')" class="p-2 hover:bg-gray-100">Cobalt</div>
+<div onclick="selectPackage('Chromium')" class="p-2 hover:bg-gray-100">Chromium</div>
+<div onclick="selectPackage('Antimony')" class="p-2 hover:bg-gray-100">Antimony</div>
+<div onclick="selectPackage('Iron')" class="p-2 hover:bg-gray-100">Iron</div>
+<div onclick="selectPackage('Cadmium')" class="p-2 hover:bg-gray-100">Cadmium</div>
+<div onclick="selectPackage('Nickel')" class="p-2 hover:bg-gray-100">Nickel</div>
+<div onclick="selectPackage('Zinc')" class="p-2 hover:bg-gray-100">Zinc</div>
+<div onclick="selectPackage('Lead')" class="p-2 hover:bg-gray-100">Lead</div>
+<div onclick="selectPackage('Mercury')" class="p-2 hover:bg-gray-100">Mercury</div>
 
 </div>
 
-<!-- CUSTOMER -->
+<!-- CUSTOMER DETAILS -->
 <h2 class="font-bold text-lg mt-10">Customer Details (Optional)</h2>
 <hr class="border-green-500 mt-2 mb-6">
 
@@ -125,7 +104,7 @@ class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
 <input placeholder="Age" type="number" class="border p-3 rounded-lg">
 
 <select class="border p-3 rounded-lg">
-<option>Select sex</option>
+<option>Select Sex</option>
 <option>Male</option>
 <option>Female</option>
 <option>Other</option>
@@ -139,47 +118,117 @@ class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
 <hr class="border-green-500 mt-2 mb-6">
 
 <div class="grid grid-cols-2 gap-6">
-<input id="collectionDT" type="datetime-local" class="border p-3 rounded-lg">
-<input id="timestamp" readonly class="border p-3 rounded-lg bg-gray-100">
+<input id="collectionDT" type="datetime-local"
+class="border p-3 rounded-lg">
+
+<input id="timestamp" readonly
+class="border p-3 rounded-lg bg-gray-100">
 </div>
 
-<!-- NEXT -->
 <div class="flex justify-center mt-10">
-<button class="bg-green-600 text-white px-16 py-3 rounded-lg">Next</button>
+<button class="bg-green-600 text-white px-16 py-3 rounded-lg">
+Next
+</button>
 </div>
 
 </form>
+</div>
 
+<!-- FULLSCREEN SCANNER -->
+<div id="scannerModal"
+class="fixed inset-0 bg-black bg-opacity-80 hidden
+flex items-center justify-center z-50">
+
+<div class="bg-white p-4 rounded-lg text-center">
+<h2 class="font-bold mb-2">Scan Code</h2>
+
+<div id="reader"></div>
+
+<button onclick="closeScanner()"
+class="mt-4 w-full bg-red-500 text-white p-2 rounded">
+Cancel
+</button>
+</div>
 </div>
 
 <!-- SCRIPT -->
 <script>
 
-let html5QrCode;
 let selectedPackages=[];
+let codeReader=new ZXing.BrowserMultiFormatReader();
+let currentStream=null;
 
-function startScanner(){
-document.getElementById("scannerBox").classList.remove("hidden");
-html5QrCode=new Html5Qrcode("reader");
-html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:250},
-(text)=>{
-document.getElementById("sampleCode").value=text;
-stopScanner();
+/* OPEN CAMERA SCANNER */
+async function openScanner(){
+
+document.getElementById("scannerModal").classList.remove("hidden");
+
+try{
+const stream=await navigator.mediaDevices.getUserMedia({
+video:{facingMode:"environment"}
+});
+
+currentStream=stream;
+
+const video=document.createElement("video");
+video.style.width="300px";
+
+const reader=document.getElementById("reader");
+reader.innerHTML="";
+reader.appendChild(video);
+
+video.srcObject=stream;
+video.play();
+
+codeReader.decodeFromVideoElement(video,(result,err)=>{
+if(result){
+sampleCode.value=result.text;
+closeScanner();
+}
+});
+
+}catch(e){
+alert("Camera permission denied");
+}
+}
+
+/* UPLOAD QR IMAGE */
+function decodeFromImage(input){
+
+const file=input.files[0];
+if(!file) return;
+
+const reader=new FileReader();
+
+reader.onload=function(){
+codeReader.decodeFromImage(undefined,reader.result)
+.then(result=>{
+sampleCode.value=result.text;
+})
+.catch(()=>{
+alert("QR not detected in image");
 });
 }
 
-function stopScanner(){
-if(html5QrCode){html5QrCode.stop();}
-document.getElementById("scannerBox").classList.add("hidden");
+reader.readAsDataURL(file);
 }
 
+/* CLOSE SCANNER */
+function closeScanner(){
+if(currentStream){
+currentStream.getTracks().forEach(t=>t.stop());
+}
+scannerModal.classList.add("hidden");
+}
+
+/* OTHERS */
 function checkOther(){
-let v=document.getElementById("sampleType").value;
-document.getElementById("otherSample").classList.toggle("hidden",v!=="Others");
+otherSample.classList.toggle("hidden",sampleType.value!=="Others");
 }
 
+/* PACKAGE */
 function togglePackageDropdown(){
-document.getElementById("packageDropdown").classList.toggle("hidden");
+packageDropdown.classList.toggle("hidden");
 }
 
 function selectPackage(pkg){
@@ -195,40 +244,47 @@ renderPackages();
 }
 
 function renderPackages(){
-let box=document.getElementById("packageInput");
-box.innerHTML="";
+packageInput.innerHTML="";
 if(selectedPackages.length===0){
-box.innerHTML="<span class='text-gray-400'>Select packages...</span>";
+packageInput.innerHTML="<span class='text-gray-400'>Select packages...</span>";
 return;
 }
 selectedPackages.forEach(p=>{
-box.innerHTML+=`<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+packageInput.innerHTML+=`
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
 ${p} <span onclick="removePackage('${p}')" style="cursor:pointer">✖</span>
 </span>`;
 });
 }
 
+/* TIMESTAMP */
 function setTimestamp(){
 let d=new Date();
-document.getElementById("timestamp").value=
+timestamp.value=
 d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+
 d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
 }
 setTimestamp();
 
+/* VALIDATION */
 function validateForm(){
-if(document.getElementById("sampleCode").value.trim()==""){
+
+if(sampleCode.value.trim()==""){
 alert("Enter Sample Code"); return false;
 }
-if(document.getElementById("sampleType").value=="Select sample type"){
+
+if(sampleType.value=="Select sample type"){
 alert("Select Sample Type"); return false;
 }
+
 if(selectedPackages.length==0){
 alert("Select at least one Package"); return false;
 }
-if(document.getElementById("collectionDT").value==""){
+
+if(collectionDT.value==""){
 alert("Select Collection Date & Time"); return false;
 }
+
 return true;
 }
 
