@@ -11,8 +11,9 @@
 
 <body class="bg-gray-100 min-h-screen">
 
+<!-- HEADER -->
 <header class="bg-white border-b">
-<div class="max-w-6xl mx-auto flex items-center gap-4 p-4">
+<div class="w-full flex items-center gap-4 p-6">
 <div class="w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-gray-400">Logo</div>
 <div>
 <h1 class="text-2xl font-bold">Ecomen Laboratory Pvt. Ltd.</h1>
@@ -21,16 +22,17 @@
 </div>
 </header>
 
-<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
+<!-- FORM -->
+<div class="w-full min-h-screen bg-white p-10">
 
-<form onsubmit="return validateForm()">
+<form onsubmit="return validateForm()" class="max-w-4xl mx-auto">
 
-<h2 class="font-bold text-lg">TRF DETAILS</h2>
+<h2 class="font-bold text-xl">TRF DETAILS</h2>
 <hr class="border-green-500 mt-2 mb-6">
 
+<!-- SAMPLE CODE -->
 <label>Sample Code *</label>
-
-<div class="flex gap-2 mt-1">
+<div class="flex gap-3 mt-1">
 
 <input id="sampleCode" autofocus
 class="w-full border rounded-lg p-3"
@@ -38,11 +40,11 @@ placeholder="Enter or scan sample code">
 
 <button type="button"
 onclick="openScanner()"
-class="border border-green-500 text-green-600 px-5 rounded-lg">
+class="border border-green-500 text-green-600 px-6 rounded-lg">
 Scan
 </button>
 
-<label class="border border-green-500 text-green-600 px-5 rounded-lg flex items-center cursor-pointer">
+<label class="border border-green-500 text-green-600 px-6 rounded-lg flex items-center cursor-pointer">
 Upload QR
 <input type="file" accept="image/*" hidden onchange="decodeFromImage(this)">
 </label>
@@ -80,7 +82,7 @@ class="border rounded-lg p-2 flex flex-wrap gap-2 cursor-pointer">
 </div>
 
 <div id="packageDropdown"
-class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
+class="hidden border rounded-lg mt-1 max-h-56 overflow-y-scroll bg-white">
 
 <div onclick="selectPackage('Copper')" class="p-2 hover:bg-gray-100">Copper</div>
 <div onclick="selectPackage('Cobalt')" class="p-2 hover:bg-gray-100">Cobalt</div>
@@ -95,8 +97,8 @@ class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
 
 </div>
 
-<!-- CUSTOMER DETAILS -->
-<h2 class="font-bold text-lg mt-10">Customer Details (Optional)</h2>
+<!-- CUSTOMER -->
+<h2 class="font-bold text-xl mt-10">Customer Details (Optional)</h2>
 <hr class="border-green-500 mt-2 mb-6">
 
 <div class="grid grid-cols-2 gap-6">
@@ -114,7 +116,7 @@ class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll bg-white">
 </div>
 
 <!-- COLLECTION -->
-<h2 class="font-bold text-lg mt-10">Collection Details</h2>
+<h2 class="font-bold text-xl mt-10">Collection Details</h2>
 <hr class="border-green-500 mt-2 mb-6">
 
 <div class="grid grid-cols-2 gap-6">
@@ -125,8 +127,9 @@ class="border p-3 rounded-lg">
 class="border p-3 rounded-lg bg-gray-100">
 </div>
 
+<!-- NEXT -->
 <div class="flex justify-center mt-10">
-<button class="bg-green-600 text-white px-16 py-3 rounded-lg">
+<button class="bg-green-600 text-white px-20 py-3 rounded-lg text-lg">
 Next
 </button>
 </div>
@@ -136,19 +139,17 @@ Next
 
 <!-- FULLSCREEN SCANNER -->
 <div id="scannerModal"
-class="fixed inset-0 bg-black bg-opacity-80 hidden
-flex items-center justify-center z-50">
+class="fixed inset-0 bg-black hidden
+flex flex-col items-center justify-center z-50">
 
-<div class="bg-white p-4 rounded-lg text-center">
-<h2 class="font-bold mb-2">Scan Code</h2>
+<p class="text-white mb-2">Align QR / Barcode inside camera</p>
 
 <div id="reader"></div>
 
 <button onclick="closeScanner()"
-class="mt-4 w-full bg-red-500 text-white p-2 rounded">
+class="mt-4 bg-red-500 text-white px-10 py-3 rounded">
 Cancel
 </button>
-</div>
 </div>
 
 <!-- SCRIPT -->
@@ -158,22 +159,27 @@ let selectedPackages=[];
 let codeReader=new ZXing.BrowserMultiFormatReader();
 let currentStream=null;
 
-/* OPEN CAMERA SCANNER */
+/* OPEN SCANNER */
 async function openScanner(){
 
-document.getElementById("scannerModal").classList.remove("hidden");
+scannerModal.classList.remove("hidden");
 
 try{
 const stream=await navigator.mediaDevices.getUserMedia({
-video:{facingMode:"environment"}
+video:{
+facingMode:"environment",
+width:{ideal:1280},
+height:{ideal:720}
+}
 });
 
 currentStream=stream;
 
 const video=document.createElement("video");
-video.style.width="300px";
+video.style.width="90vw";
+video.style.maxWidth="500px";
+video.setAttribute("playsinline",true);
 
-const reader=document.getElementById("reader");
 reader.innerHTML="";
 reader.appendChild(video);
 
@@ -192,28 +198,21 @@ alert("Camera permission denied");
 }
 }
 
-/* UPLOAD QR IMAGE */
+/* UPLOAD IMAGE QR */
 function decodeFromImage(input){
-
 const file=input.files[0];
 if(!file) return;
 
-const reader=new FileReader();
-
-reader.onload=function(){
-codeReader.decodeFromImage(undefined,reader.result)
-.then(result=>{
-sampleCode.value=result.text;
-})
-.catch(()=>{
-alert("QR not detected in image");
-});
+const fr=new FileReader();
+fr.onload=function(){
+codeReader.decodeFromImage(undefined,fr.result)
+.then(r=>sampleCode.value=r.text)
+.catch(()=>alert("QR not detected"));
+}
+fr.readAsDataURL(file);
 }
 
-reader.readAsDataURL(file);
-}
-
-/* CLOSE SCANNER */
+/* CLOSE */
 function closeScanner(){
 if(currentStream){
 currentStream.getTracks().forEach(t=>t.stop());
@@ -226,7 +225,7 @@ function checkOther(){
 otherSample.classList.toggle("hidden",sampleType.value!=="Others");
 }
 
-/* PACKAGE */
+/* PACKAGES */
 function togglePackageDropdown(){
 packageDropdown.classList.toggle("hidden");
 }
@@ -266,7 +265,7 @@ d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
 }
 setTimestamp();
 
-/* VALIDATION */
+/* VALIDATE */
 function validateForm(){
 
 if(sampleCode.value.trim()==""){
