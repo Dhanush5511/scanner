@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ecomen Laboratory Pvt. Ltd.</title>
+<title>TRF DETAILS</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 </head>
 
@@ -13,123 +13,126 @@
 
 <!-- HEADER -->
 <header class="bg-white border-b">
-<div class="w-full flex items-center gap-4 p-6">
-<div class="w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-gray-400">Logo</div>
-<div>
-<h1 class="text-2xl font-bold">Ecomen Laboratory Pvt. Ltd.</h1>
-<p class="text-gray-500">Sample Registration System</p>
-</div>
-</div>
+  <div class="max-w-6xl mx-auto flex items-center gap-4 p-4">
+    <div class="w-16 h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-gray-400">Logo</div>
+    <div>
+      <h1 class="text-2xl font-bold">Sample Registration System</h1>
+    </div>
+  </div>
 </header>
 
-<!-- FORM -->
-<div class="w-full min-h-screen bg-white p-10">
+<!-- FORM CARD -->
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
 
-<form onsubmit="return validateForm()" class="max-w-4xl mx-auto">
+<form onsubmit="return handleNext()">
 
-<h2 class="font-bold text-xl">TRF DETAILS</h2>
-<hr class="border-green-500 mt-2 mb-6">
+<h2 class="font-bold text-lg">TRF DETAILS</h2>
+<hr class="border-green-500 border-2 mt-2 mb-6">
 
 <!-- SAMPLE CODE -->
 <label>Sample Code *</label>
 <div class="flex gap-3 mt-1">
+<input id="sampleCode" class="w-full border rounded-lg p-3"
+ placeholder="Enter or scan sample code">
 
-<input id="sampleCode" autofocus
-class="w-full border rounded-lg p-3"
-placeholder="Enter or scan sample code">
-
-<button type="button"
-onclick="openScanner()"
-class="border border-green-500 text-green-600 px-6 rounded-lg">
-Scan
+<button type="button" onclick="startScanner()"
+class="border border-green-500 text-green-600 px-5 rounded-lg">
+QR / Barcode
 </button>
 
-<label class="border border-green-500 text-green-600 px-6 rounded-lg flex items-center cursor-pointer">
+<button type="button" onclick="document.getElementById('qrUpload').click()"
+class="border border-green-500 text-green-600 px-5 rounded-lg">
 Upload QR
-<input type="file" accept="image/*" hidden onchange="decodeFromImage(this)">
-</label>
+</button>
 
+<input type="file" id="qrUpload" accept="image/*" hidden onchange="scanFromImage(event)">
 </div>
 
-<p class="text-sm text-gray-500 mt-1">
-Use USB scanner, Scan, or Upload QR image
-</p>
+<p class="text-sm text-gray-500 mt-1">Use USB / Bluetooth scanner or camera</p>
+
+<!-- SCANNER MODAL -->
+<div id="scannerModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+  <div class="bg-white p-4 rounded-xl text-center">
+    <h3 class="font-bold mb-2">Scan Code</h3>
+    <div id="reader" style="width:300px"></div>
+    <button onclick="closeScanner()" class="mt-3 w-full bg-red-500 text-white p-2 rounded">
+      Cancel
+    </button>
+  </div>
+</div>
 
 <!-- TYPE -->
 <div class="mt-6">
 <label>Type of Sample *</label>
-<select id="sampleType" onchange="checkOther()"
-class="w-full border rounded-lg p-3 mt-1">
-<option>Select sample type</option>
-<option>Blood</option>
-<option>Urine</option>
-<option>Others</option>
+<select id="sampleType" onchange="checkOtherSample()" class="w-full border rounded-lg p-3 mt-1">
+<option value="">Select sample type</option>
+<option value="Blood">Blood</option>
+<option value="Urine">Urine</option>
+<option value="Other">Other</option>
 </select>
 
 <input id="otherSample"
-class="hidden w-full border rounded-lg p-3 mt-2"
-placeholder="Enter sample type">
+placeholder="Enter Other Sample Type"
+class="w-full border rounded-lg p-3 mt-3 hidden">
 </div>
 
 <!-- PACKAGE -->
 <div class="mt-6">
 <label>Package *</label>
 
-<div id="packageInput"
-onclick="togglePackageDropdown()"
-class="border rounded-lg p-2 flex flex-wrap gap-2 cursor-pointer">
+<div id="packageBox" onclick="togglePackages()"
+class="border rounded-lg p-2 flex flex-wrap gap-2 cursor-pointer min-h-[45px]">
 <span class="text-gray-400">Select packages...</span>
 </div>
 
-<div id="packageDropdown"
-class="hidden border rounded-lg mt-1 max-h-56 overflow-y-scroll bg-white">
+<div id="packageList" class="hidden border rounded-lg mt-1 max-h-48 overflow-y-scroll">
 
-<div onclick="selectPackage('Copper')" class="p-2 hover:bg-gray-100">Copper</div>
-<div onclick="selectPackage('Cobalt')" class="p-2 hover:bg-gray-100">Cobalt</div>
-<div onclick="selectPackage('Chromium')" class="p-2 hover:bg-gray-100">Chromium</div>
-<div onclick="selectPackage('Antimony')" class="p-2 hover:bg-gray-100">Antimony</div>
-<div onclick="selectPackage('Iron')" class="p-2 hover:bg-gray-100">Iron</div>
-<div onclick="selectPackage('Cadmium')" class="p-2 hover:bg-gray-100">Cadmium</div>
-<div onclick="selectPackage('Nickel')" class="p-2 hover:bg-gray-100">Nickel</div>
-<div onclick="selectPackage('Zinc')" class="p-2 hover:bg-gray-100">Zinc</div>
-<div onclick="selectPackage('Lead')" class="p-2 hover:bg-gray-100">Lead</div>
-<div onclick="selectPackage('Mercury')" class="p-2 hover:bg-gray-100">Mercury</div>
+<script>
+const packages = [
+"Copper","Cobalt","Chromium","Antimony","Iron","Cadmium","Beryllium",
+"Molybdenum","Nickel","Vanadium","Zinc","Bismuth","Cesium","Uranium",
+"Strontium","Aluminium","Barium","Silver","Tin","Thallium","Arsenic",
+"Lead","Mercury","Platinum","Tungsten","Calcium","Magnesium",
+"Manganese","Selenium","Lithium"
+];
+
+packages.forEach(p=>{
+ document.write(`<div onclick="addPackage('${p}')" class="p-2 hover:bg-gray-100 cursor-pointer">${p}</div>`);
+});
+</script>
 
 </div>
 
 <!-- CUSTOMER -->
-<h2 class="font-bold text-xl mt-10">Customer Details (Optional)</h2>
-<hr class="border-green-500 mt-2 mb-6">
+<h2 class="font-bold text-lg mt-10">Customer Details (Optional)</h2>
+<hr class="border-green-500 border-2 mt-2 mb-6">
 
 <div class="grid grid-cols-2 gap-6">
-<input placeholder="Name" class="border p-3 rounded-lg">
-<input placeholder="Age" type="number" class="border p-3 rounded-lg">
+<input id="name" placeholder="Name" class="border p-3 rounded-lg">
+<input id="age" type="number" placeholder="Age" class="border p-3 rounded-lg">
 
-<select class="border p-3 rounded-lg">
-<option>Select Sex</option>
+<select id="sex" class="border p-3 rounded-lg">
+<option value="">Select Sex</option>
 <option>Male</option>
 <option>Female</option>
 <option>Other</option>
 </select>
 
-<input placeholder="Location" class="border p-3 rounded-lg">
+<input id="location" placeholder="Location" class="border p-3 rounded-lg">
 </div>
 
 <!-- COLLECTION -->
-<h2 class="font-bold text-xl mt-10">Collection Details</h2>
-<hr class="border-green-500 mt-2 mb-6">
+<h2 class="font-bold text-lg mt-10">Collection Details</h2>
+<hr class="border-green-500 border-2 mt-2 mb-6">
 
 <div class="grid grid-cols-2 gap-6">
-<input id="collectionDT" type="datetime-local"
-class="border p-3 rounded-lg">
-
-<input id="timestamp" readonly
-class="border p-3 rounded-lg bg-gray-100">
+<input id="collectionDT" type="datetime-local" class="border p-3 rounded-lg">
+<input id="timestamp" readonly class="border p-3 rounded-lg bg-gray-100">
 </div>
 
 <!-- NEXT -->
 <div class="flex justify-center mt-10">
-<button class="bg-green-600 text-white px-20 py-3 rounded-lg text-lg">
+<button class="bg-green-600 text-white px-16 py-3 rounded-lg">
 Next
 </button>
 </div>
@@ -137,157 +140,146 @@ Next
 </form>
 </div>
 
-<!-- FULLSCREEN SCANNER -->
-<div id="scannerModal"
-class="fixed inset-0 bg-black hidden
-flex flex-col items-center justify-center z-50">
-
-<p class="text-white mb-2">Align QR / Barcode inside camera</p>
-
-<div id="reader"></div>
-
-<button onclick="closeScanner()"
-class="mt-4 bg-red-500 text-white px-10 py-3 rounded">
-Cancel
-</button>
-</div>
-
 <!-- SCRIPT -->
 <script>
 
 let selectedPackages=[];
-let codeReader=new ZXing.BrowserMultiFormatReader();
-let currentStream=null;
-
-/* OPEN SCANNER */
-async function openScanner(){
-
-scannerModal.classList.remove("hidden");
-
-try{
-const stream=await navigator.mediaDevices.getUserMedia({
-video:{
-facingMode:"environment",
-width:{ideal:1280},
-height:{ideal:720}
-}
-});
-
-currentStream=stream;
-
-const video=document.createElement("video");
-video.style.width="90vw";
-video.style.maxWidth="500px";
-video.setAttribute("playsinline",true);
-
-reader.innerHTML="";
-reader.appendChild(video);
-
-video.srcObject=stream;
-video.play();
-
-codeReader.decodeFromVideoElement(video,(result,err)=>{
-if(result){
-sampleCode.value=result.text;
-closeScanner();
-}
-});
-
-}catch(e){
-alert("Camera permission denied");
-}
-}
-
-/* UPLOAD IMAGE QR */
-function decodeFromImage(input){
-const file=input.files[0];
-if(!file) return;
-
-const fr=new FileReader();
-fr.onload=function(){
-codeReader.decodeFromImage(undefined,fr.result)
-.then(r=>sampleCode.value=r.text)
-.catch(()=>alert("QR not detected"));
-}
-fr.readAsDataURL(file);
-}
-
-/* CLOSE */
-function closeScanner(){
-if(currentStream){
-currentStream.getTracks().forEach(t=>t.stop());
-}
-scannerModal.classList.add("hidden");
-}
-
-/* OTHERS */
-function checkOther(){
-otherSample.classList.toggle("hidden",sampleType.value!=="Others");
-}
-
-/* PACKAGES */
-function togglePackageDropdown(){
-packageDropdown.classList.toggle("hidden");
-}
-
-function selectPackage(pkg){
-if(!selectedPackages.includes(pkg)){
-selectedPackages.push(pkg);
-renderPackages();
-}
-}
-
-function removePackage(pkg){
-selectedPackages=selectedPackages.filter(p=>p!==pkg);
-renderPackages();
-}
-
-function renderPackages(){
-packageInput.innerHTML="";
-if(selectedPackages.length===0){
-packageInput.innerHTML="<span class='text-gray-400'>Select packages...</span>";
-return;
-}
-selectedPackages.forEach(p=>{
-packageInput.innerHTML+=`
-<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-${p} <span onclick="removePackage('${p}')" style="cursor:pointer">✖</span>
-</span>`;
-});
-}
+let qrScanner=null;
 
 /* TIMESTAMP */
 function setTimestamp(){
-let d=new Date();
-timestamp.value=
-d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+
-d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+ const d=new Date();
+ document.getElementById("timestamp").value =
+ d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+
+ d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
 }
 setTimestamp();
+setInterval(setTimestamp,1000);
 
-/* VALIDATE */
-function validateForm(){
-
-if(sampleCode.value.trim()==""){
-alert("Enter Sample Code"); return false;
+/* TYPE OTHER */
+function checkOtherSample(){
+ const val=document.getElementById("sampleType").value;
+ document.getElementById("otherSample")
+   .classList.toggle("hidden", val!=="Other");
 }
 
-if(sampleType.value=="Select sample type"){
-alert("Select Sample Type"); return false;
+/* PACKAGE */
+function togglePackages(){
+ document.getElementById("packageList").classList.toggle("hidden");
 }
 
-if(selectedPackages.length==0){
-alert("Select at least one Package"); return false;
+function addPackage(p){
+ if(!selectedPackages.includes(p)){
+  selectedPackages.push(p);
+  renderPackages();
+ }
 }
 
-if(collectionDT.value==""){
-alert("Select Collection Date & Time"); return false;
+function removePackage(p){
+ selectedPackages=selectedPackages.filter(x=>x!==p);
+ renderPackages();
 }
 
-return true;
+function renderPackages(){
+ const box=document.getElementById("packageBox");
+ box.innerHTML="";
+ if(selectedPackages.length==0){
+  box.innerHTML="<span class='text-gray-400'>Select packages...</span>";
+  return;
+ }
+ selectedPackages.forEach(p=>{
+  box.innerHTML+=`
+  <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full">
+   ${p} <span onclick="removePackage('${p}')" style="cursor:pointer">✖</span>
+  </span>`;
+ });
 }
 
+/* CAMERA SCAN */
+async function startScanner(){
+
+ document.getElementById("scannerModal").classList.remove("hidden");
+
+ qrScanner=new Html5Qrcode("reader");
+
+ try{
+  await qrScanner.start(
+   {facingMode:"environment"},
+   {fps:10,qrbox:250},
+   async(text)=>{
+     document.getElementById("sampleCode").value=text;
+     closeScanner();
+   }
+  );
+ }catch{
+  alert("Camera not available");
+  closeScanner();
+ }
+}
+
+async function closeScanner(){
+
+ if(qrScanner){
+  try{
+   await qrScanner.stop();
+   await qrScanner.clear();
+  }catch{}
+  qrScanner=null;
+ }
+
+ document.getElementById("scannerModal").classList.add("hidden");
+}
+
+/* UPLOAD QR */
+async function scanFromImage(e){
+
+ const file=e.target.files[0];
+ if(!file) return;
+
+ const qr=new Html5Qrcode("reader");
+
+ try{
+  const result=await qr.scanFile(file,true);
+  document.getElementById("sampleCode").value=result;
+  await qr.clear();
+ }
+ catch{
+  alert("QR not detected");
+ }
+}
+
+
+function handleNext(){
+
+ let valid = true;
+
+ const sampleCode = document.getElementById("sampleCode").value.trim();
+ const sampleType = document.getElementById("sampleType").value;
+ const otherSample = document.getElementById("otherSample").value.trim();
+ const collectionDT = document.getElementById("collectionDT").value;
+
+ if(sampleCode === "") valid = false;
+ if(sampleType === "") valid = false;
+
+ if(sampleType === "Other" && otherSample === ""){
+   valid = false;
+ }
+
+ if(selectedPackages.length === 0) valid = false;
+
+ if(collectionDT === "") valid = false;
+
+ if(!valid){
+   alert("Please fill all mandatory fields before proceeding.");
+   return false;
+ }
+
+ // everything ok
+ alert("All validations passed. Moving to Preview Page...");
+ return true;
+}
 </script>
+
 
 </body>
 </html>
